@@ -11,22 +11,25 @@ interface NotesProps {
     search?: string;
     page?: string;
   }>;
+  params: Promise<{ slug: string[] }>;
 }
 
-const Notes = async ({ searchParams }: NotesProps) => {
+const Notes = async ({ searchParams, params }: NotesProps) => {
   const { search = '', page = '1' } = await searchParams;
   const pageNumber = Number(page) || 1;
+  const { slug } = await params;
+  const tag = slug[0] === 'all' ? undefined : slug[0];
 
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ['notes', search, pageNumber],
-    queryFn: () => fetchNotes(search, pageNumber),
+    queryKey: ['notes', search, pageNumber, tag],
+    queryFn: () => fetchNotes(search, pageNumber, tag),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <NotesClient />
+      <NotesClient tag={tag} />
     </HydrationBoundary>
   );
 };

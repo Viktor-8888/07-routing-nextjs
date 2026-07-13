@@ -3,25 +3,29 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useDebouncedCallback } from 'use-debounce';
-import Pagination from '../../components/Pagination/Pagination';
-import Modal from '../../components/Modal/Modal';
-import NoteForm from '../../components/NoteForm/NoteForm';
-import SearchBox from '../../components/SearchBox/SearchBox';
-import NoteList from '../../components/NoteList/NoteList';
-import { fetchNotes } from '../../lib/api';
+import Pagination from '@/components/Pagination/Pagination';
+import Modal from '@/components/Modal/Modal';
+import NoteForm from '@/components/NoteForm/NoteForm';
+import SearchBox from '@/components/SearchBox/SearchBox';
+import NoteList from '@/components/NoteList/NoteList';
+import { fetchNotes } from '@/lib/api';
 import css from './NotesPage.module.css';
-import Loader from '../../components/Loader/Loader';
-import ErrorMessage from '../../components/ErrorMessage/ErrorMessage';
+import Loader from '@/components/Loader/Loader';
+import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
 
-export default function NotesClient() {
+type Props = {
+  tag: string | undefined;
+};
+
+export default function NotesClient({ tag }: Props) {
   const [search, setSearch] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data, isLoading, isError, isFetching } = useQuery({
-    queryKey: ['notes', search, page],
-    queryFn: () => fetchNotes(search, page),
+    queryKey: ['notes', search, page, tag],
+    queryFn: () => fetchNotes(search, page, tag),
     placeholderData: keepPreviousData,
     refetchOnMount: false,
   });
